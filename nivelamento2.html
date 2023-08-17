@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coleta de Informações</title>
+</head>
+<body>
+    <form id="infoForm">
+        <h1>Coleta de Informações</h1>
+        <p>Preencha as informações abaixo para cada pessoa:</p>
+        
+        <div id="inputs"></div>
+        
+        <button type="button" onclick="submitForm()">Processar</button>
+    </form>
+    
+    <div id="results"></div>
+    
+    <script>
+        const numPeople = 15;
+        let alturas = [];
+        let generos = [];
+        let qtd_homens = 0;
+        let qtd_mulher = 0;
+
+        const formDiv = document.getElementById("inputs");
+        for (let i = 0; i < numPeople; i++) {
+            const personDiv = document.createElement("div");
+            personDiv.innerHTML = `
+                <h3>Pessoa ${i + 1}</h3>
+                <label for="altura${i}">Altura (em centímetros):</label>
+                <input type="number" id="altura${i}" step="any" required>
+                <label for="genero${i}">Gênero (M/F):</label>
+                <input type="text" id="genero${i}" maxlength="1" required>
+                <br><br>
+            `;
+            formDiv.appendChild(personDiv);
+        }
+
+        function submitForm() {
+            alturas = [];
+            generos = [];
+            qtd_homens = 0;
+            qtd_mulher = 0;
+
+            for (let i = 0; i < numPeople; i++) {
+                const alturaInput = document.getElementById(`altura${i}`);
+                const generoInput = document.getElementById(`genero${i}`);
+                alturas.push(parseFloat(alturaInput.value));
+                generos.push(generoInput.value.toUpperCase());
+                if (generoInput.value.toUpperCase() === "M") {
+                    qtd_homens++;
+                } else if (generoInput.value.toUpperCase() === "F") {
+                    qtd_mulher++;
+                }
+            }
+
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<h2>Informações:</h2>";
+
+            for (let i = 0; i < numPeople; i++) {
+                resultsDiv.innerHTML += `<p>Pessoa ${i + 1} - Altura: ${alturas[i]} cm, Gênero: ${generos[i]}</p>`;
+            }
+
+            const maior_altura = Math.max(...alturas);
+            const menor_altura = Math.min(...alturas);
+
+            resultsDiv.innerHTML += `<p>Maior altura: ${maior_altura} cm</p>`;
+            resultsDiv.innerHTML += `<p>Menor altura: ${menor_altura} cm</p>`;
+
+            if (qtd_homens > 0) {
+                const soma_alturas_homens = alturas.reduce((sum, altura, index) => {
+                    if (generos[index] === "M") {
+                        return sum + altura;
+                    }
+                    return sum;
+                }, 0);
+
+                const media_altura_homens = soma_alturas_homens / qtd_homens;
+                resultsDiv.innerHTML += `<p>Média da altura dos homens: ${media_altura_homens.toFixed(2)} cm</p>`;
+            } else {
+                resultsDiv.innerHTML += "<p>Nenhum homem.</p>";
+            }
+
+            resultsDiv.innerHTML += `<p>A quantidade de mulheres foi: ${qtd_mulher}</p>`;
+        }
+    </script>
+</body>
+</html>
